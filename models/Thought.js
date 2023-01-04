@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const reactionSchema = require("./Reaction");
 
 const thoughtSchema = new Schema(
   {
@@ -10,8 +11,8 @@ const thoughtSchema = new Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now,
-      // !! use a getter method to format the timestamp on query
+      default: Date.now(),
+      get: (timestamp) => new Date(timestamp).toDateString(),
     },
     // the user that created this thought
     username: {
@@ -19,16 +20,13 @@ const thoughtSchema = new Schema(
       required: true,
     },
     // these are like replies
-    reactions: [
-      {
-        // !! array of nested documents created with the reactionSchema
-      },
-    ],
+    reactions: [reactionSchema],
   },
   {
     // Here we are indicating that we want virtuals to be included with our response, overriding the default behavior
     toJSON: {
       virtuals: true,
+      getters: true,
     },
     id: false,
   }
@@ -38,5 +36,8 @@ const thoughtSchema = new Schema(
 thoughtSchema
   .virtual("reactionCount")
   // Getter
-  // !! finish virtual
-  .get();
+  .get(function () {
+    return this.reactions.length;
+  });
+
+const Thought = model("Thought", thoughtSchema);
