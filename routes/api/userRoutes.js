@@ -4,6 +4,10 @@ const {
   createUser,
   getUsers,
   getSingleUser,
+  updateUser,
+  removeUser,
+  createFriend,
+  removeFriend,
 } = require("../../controllers/userController");
 
 // creates a new user using post request
@@ -17,6 +21,8 @@ router.route("/").get(getUsers).post(createUser);
 // gets a single user by their Id using get request
 // api/users/:userId
 // !! also get populated thought and friend data
-router.route("/:userId").get(getSingleUser);
+router.route("/:userId").get(getSingleUser).put(updateUser).delete(removeUser);
+
+router.route("/:userId/friends/:friendId").post(createFriend).delete(removeFriend);
 
 module.exports = router;
